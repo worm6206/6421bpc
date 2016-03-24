@@ -4,7 +4,7 @@
 #define PHT_CTR_MAX  3
 #define PHT_CTR_INIT 2
 
-#define HIST_LEN   17
+#define HIST_LEN   14
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
 // Total storage budget: 32KB + 17 bits
@@ -22,13 +22,17 @@
 PREDICTOR::PREDICTOR(void){
 
   historyLength    = HIST_LEN;
-  ghr              = 0;
+  // ghr              = 0;
   numPhtEntries    = (1<< HIST_LEN);
 
   pht = new UINT32[numPhtEntries];
+  bht = new UINT32[numPhtEntries];
 
   for(UINT32 ii=0; ii< numPhtEntries; ii++){
-    pht[ii]=PHT_CTR_INIT; 
+    pht[ii]=0; 
+  }
+  for(UINT32 ii=0; ii< numPhtEntries; ii++){
+    bht[ii]=PHT_CTR_INIT; 
   }
   
 }
@@ -38,10 +42,13 @@ PREDICTOR::PREDICTOR(void){
 
 bool   PREDICTOR::GetPrediction(UINT32 PC){
 
-  UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
-  UINT32 phtCounter = pht[phtIndex];
+  // UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
+  // UINT32 phtCounter = pht[phtIndex];
+  UINT32 pht_history = pht[(PC&HIST_LEN)];
+  UINT32 PcPhtXor = (PC^pht_history) % (numPhtEntries);
+  UINT32 bhtCounter = bht[PcPhtXor];
   
-  if(phtCounter > PHT_CTR_MAX/2){
+  if(bhtCounter > PHT_CTR_MAX/2){
     return TAKEN; 
   }else{
     return NOT_TAKEN; 
@@ -55,22 +62,24 @@ bool   PREDICTOR::GetPrediction(UINT32 PC){
 
 void  PREDICTOR::UpdatePredictor(UINT32 PC, bool resolveDir, bool predDir, UINT32 branchTarget){
 
-  UINT32 phtIndex   = (PC^ghr) % (numPhtEntries);
-  UINT32 phtCounter = pht[phtIndex];
+  UINT32 pht_history = pht[(PC&HIST_LEN)];
+  UINT32 PcPhtXor = (PC^pht_history) % (numPhtEntries);
+  UINT32 bhtCounter = bht[PcPhtXor];
 
-  // update the PHT
+  // update the bht
 
   if(resolveDir == TAKEN){
-    pht[phtIndex] = SatIncrement(phtCounter, PHT_CTR_MAX);
+    bht[PcPhtXor] = SatIncrement(bhtCounter, PHT_CTR_MAX);
   }else{
-    pht[phtIndex] = SatDecrement(phtCounter);
+    bht[PcPhtXor] = SatDecrement(bhtCounter);
   }
 
-  // update the GHR
-  ghr = (ghr << 1);
+  // update the pht
+
+  pht[PcPhtXor] = (pht[PcPhtXor] << 1);
 
   if(resolveDir == TAKEN){
-    ghr++; 
+    pht[PcPhtXor]++; 
   }
 
 }

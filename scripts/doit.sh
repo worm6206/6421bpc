@@ -20,7 +20,6 @@ num_parallel_jobs=8
 # ./getdata.pl -d ../results/GSHARE.04KB  ../results/GSHARE.08KB ../results/GSHARE.16KB ../results/GSHARE.32KB
 
 
-
 ###########  PAST RUNS FOR 4KB, 8KB, and 16KB ###########
 
 # The results are already in "../results" directory
