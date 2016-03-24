@@ -4,14 +4,20 @@
 #define PHT_CTR_MAX  3
 #define PHT_CTR_INIT 2
 
-#define HIST_LEN   13
+#define HIST_LEN   14
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
-// Total storage budget: 32KB + 17 bits
-// Total PHT counters: 2^17 
-// Total PHT size = 2^17 * 2 bits/counter = 2^18 bits = 32KB
-// GHR size: 17 bits
-// Total Size = PHT size + GHR size
+/*
+Pshare:
+  PHT: 14*2^14
+  BHT: 2*2^14
+Gshare:
+  PHT: 2*2^14
+  GHR: 14
+Meta-predictor: 2*2^14
+
+Total size: 20*2^14 + 14  = 327694 bits = 40.9Kbyte
+ */
 /////////////////////////////////////////////////////////////
 
 
