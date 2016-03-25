@@ -2,7 +2,7 @@
 
 
 #set this variable to NumCores in your cluster machine for faster sims
-num_parallel_jobs=8
+num_parallel_jobs=2
 
 
 ###########  HOW TO RUN JOBS?  ################

@@ -6,7 +6,7 @@
 #define META_CTR_MAX  7
 #define META_CTR_INIT 3
 
-#define HIST_LEN   17
+#define HIST_LEN   14
 
 /////////////// STORAGE BUDGET JUSTIFICATION ////////////////
 /*
